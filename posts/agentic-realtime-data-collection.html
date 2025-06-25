@@ -162,6 +162,8 @@
         padding: 1.5rem;
         border-radius: 0.5rem;
         overflow-x: auto;
+        overflow-y: auto;
+        max-height: 500px;
         font-size: 0.95em;
       }
       .prose code {
@@ -425,9 +427,9 @@
         were about the engine under the hood: How was I
         collecting and verifying complex event data in near
         real-time? This project was a personal exploration
-        into building
-        <span class="accent-text">multi-agent systems</span>
-        for high-stakes data environments.
+        into building a
+        <span class="accent-text">multi-agent system</span>
+        for highly-dynamic data gathering and evaluation.
       </p>
 
       <img
@@ -444,8 +446,8 @@
           >Raw news is often contradictory, and separating
           signal from noise requires immense effort.</span
         >
-        I was fascinated by this data problem: Could I build
-        an automated system using
+        I was fascinated by this problem: Could I build an
+        automated system using
         <strong class="accent-text"
           >LLM orchestration</strong
         >
@@ -453,19 +455,19 @@
         to reason about it, verify it, and structure it for
         analysis? This project started as a personal quest
         to see if modern agentic AI could be architected to
-        handle such a high-stakes
-        <strong class="accent-text"
-          >data verification pipeline</strong
-        >. This post details the system I built to do just
-        that.
+        handle such a scenario. This post details the system
+        I built to do just that.
       </p>
 
       <h2>The Foundation</h2>
       <p>
-        Every successful data project begins with clear
-        questions. Before writing a single line of code, I
-        defined a set of high-level research objectives that
-        would guide the entire data collection strategy.
+        <span class="accent-text"
+          >Every successful data project begins with clear
+          questions.</span
+        >
+        Before writing a single line of code, I defined a
+        set of high-level research objectives that would
+        guide the entire data collection strategy.
       </p>
 
       <div class="research-grid">
@@ -557,11 +559,14 @@
 
       <h2>The Architecture: A Dual-Agent Feedback Loop</h2>
       <p>
-        I soon discovered that a single, monolithic agent
-        would struggle with the nuanced task of both
-        open-ended research and critical validation. The
-        risk of confirmation bias or hallucination would be
-        too high. Instead, I implemented a
+        I soon discovered that
+        <span class="accent-text"
+          >a single, monolithic agent would struggle with
+          the nuanced task of both open-ended research and
+          critical validation.</span
+        >
+        The risk of confirmation bias or hallucination would
+        be too high. Instead, I implemented a
         <strong class="accent-text"
           >multi-agent system</strong
         >
@@ -938,34 +943,60 @@
       </p>
       <pre class="mt-6"><code class="language-python">
 EVALUATOR_PROMPT = """
-# Role Definition
-You are a meticulous OSINT (Open-Source Intelligence) validation agent.
-Your sole purpose is to verify the factual accuracy of a given JSON object containing conflict data.
+# Persona Instructions
+You are an expert Geo-Political and War Analyst. Your core expertise lies in Open-Source Intelligence (OSINT), information verification, and conflict analysis. You are meticulous, objective, and rely solely on credible, verifiable data. Your mission is to operate with the highest standards of accuracy and neutrality. You have full and unrestricted access to the public internet to perform your duties.
 
-# Core Constraints
-- You must not introduce new information.
-- Your role is to scrutinize, not research.
-- Default stance is skepticism.
+# Language and Cultural Proficiency
+You are proficient in English, Hebrew, Farsi and Arabic and you have a deep understanding of middle eastern cultures across the region.
 
-# Input
-A JSON object containing data points with `verified_status` fields.
+# Task Definition
+Your primary task is to validate, verify, and correct a user-provided JSON object containing data points about the ongoing conflict between Israel and Iran as of June 2025. You will receive the data within &lt;data&gt; tags. After a thorough investigation of each data point, you must produce two distinct outputs:
 
-# Verification Process
-1. For each key-value pair in the JSON:
-   - Use `google_search` tool to find at least two high-quality, independent sources.
-   - Prioritize: established news agencies, think tanks (CSIS), official statements.
-   - Cross-reference information from sources against JSON data.
-2. Critically evaluate existing citations in `verified_status` field.
-3. Update `verified_status` with confidence levels:
-   - [High Confidence]: Multiple reputable sources confirm.
-   - [Medium Confidence]: Some corroboration, minor discrepancies.
-   - [Low Confidence]: Cannot find corroborating evidence.
-4. Include brief justification citing your verification sources.
+1. An object that contains the fully validated and corrected data in JSON format.
+2. A concise summary of your findings and the corrections you made.
 
-# Golden Rule
-If you cannot find corroborating evidence for a data point, assign it [Low Confidence].
+# Context
+The current date is June 2025. The user will provide a JSON object detailing various aspects of the Israel-Iran conflict. This data is considered raw intelligence and requires your expert validation before it can be trusted. Your role is to be the final arbiter of this information's accuracy.
+
+# Instructions
+Follow these steps methodically to complete your task:
+
+## Step 1: Internal Verification Log
+Before generating the final output, create an internal "Verification Log" for your own use (do not display this in the final output unless specifically asked). This log will serve as your chain-of-thought, where you document your process for each data point. For each key in the JSON object, you will log:
+- The original value.
+- The search queries you used for verification.
+- A summary of the information you found from reputable sources (e.g., major international news agencies like Reuters, Associated Press, AFP; respected think tanks like CSIS, IISS; and official government statements).
+- Your final decision: "CONFIRMED", "CORRECTED", or "UNVERIFIABLE".
+- If "CORRECTED", state the new value and the primary sources that justify the correction.
+
+## Step 2: Data Ingestion and Iteration
+Parse the JSON object provided by the user inside the &lt;data&gt; tags. Systematically iterate through every key-value pair in the object. Do not skip any field.
+
+## Step 3: Verification and Correction
+For each data point, use your internet access to perform rigorous verification.
+- Cross-Referencing: Do not rely on a single source. Triangulate information from at least 2-3 independent, high-quality sources.
+- Source Scrutiny: Prioritize primary sources and reputable, neutral reporting. Be wary of state-sponsored media, unverified social media claims, and known sources of propaganda.
+- Data Correction: If your investigation reveals that the data is inaccurate or outdated, update the value in your working copy of the JSON object with the verified information.
+- No Verification: If a specific data point cannot be independently verified after a thorough search, leave it as is but make a note in your internal log and mention it in your final summary.
+
+## Step 4: Output Generation
+Once every data point in the JSON object has been assessed, generate the two required outputs precisely as specified in the &lt;output_format_specification&gt;.
+
+# Constraints
+Adhere to these rules strictly:
+- SCHEMA IMMUTABILITY: The JSON schema of your output MUST be identical to the input schema. You are forbidden from adding, deleting, or renaming any keys in the JSON object. You are only permitted to modify the values of existing keys.
+- Base all corrections on credible, publicly verifiable sources. Avoid speculation.
+- Maintain a neutral, fact-based tone in your summary. Report the facts without expressing bias or opinion.
+
+# Output Format Specification
+You must generate the following two outputs, clearly separated:
+1. &lt;canvas_object&gt; - The fully validated and corrected JSON object
+2. &lt;verification_summary&gt; - A concise summary of findings and corrections made
+
+# Final Instruction Reminder
+Your task is to validate the data within the upcoming &lt;data&gt; tags and return the &lt;canvas_object&gt; and &lt;verification_summary&gt; as defined. Ensure the JSON schema remains unchanged. Await the data.
 """
-        </code></pre>
+</code></pre>
 
       <h2>
         Core Engineering Decisions and Lessons Learned
@@ -996,8 +1027,18 @@ If you cannot find corroborating evidence for a data point, assign it [Low Confi
         <strong class="accent-text"
           >LLM orchestration</strong
         >
-        system.
+        system. The importance of sourcing became so central
+        to the project that I eventually integrated the
+        agent's source citations directly into the
+        application interface, allowing users to trace every
+        data point back to its original verification.
       </p>
+
+      <img
+        src="../images/IsraelVsIranSources.png"
+        alt="Israel Vs Iran Dashboard showing source citations and verification details"
+        class="w-full rounded-lg shadow-lg my-8 border border-gray-200"
+      />
 
       <h3>Battling Context Bloat: The Stateless Loop</h3>
       <p>
@@ -1043,8 +1084,11 @@ If you cannot find corroborating evidence for a data point, assign it [Low Confi
         the web. Its sole purpose was to act as a tireless
         research assistant, producing a highly-vetted,
         traceable dataset for a final human review. This
-        human oversight is, and must remain, the most
-        important quality gate in the entire process.
+        <span class="accent-text"
+          >human oversight is, and must remain, the most
+          important quality gate in the entire
+          process.</span
+        >
       </p>
 
       <h2>Example Output: The Verified JSON Dataset</h2>
@@ -1067,17 +1111,19 @@ If you cannot find corroborating evidence for a data point, assign it [Low Confi
         around a dual-agent feedback loop, enforcing a
         strict data contract via JSON, and grounding every
         claim in a verifiable source, it's possible to
-        create a powerful engine for sense-making in a
-        chaotic information environment. The key was not
+        create a powerful engine for accurate data mining in
+        a chaotic information environment. The key was not
         just building smart agents, but building a robust,
         skeptical system around them. While this system
         proved effective, future iterations could explore
         adding more diverse data sources (like automated
         satellite imagery analysis) or even attempting to
-        generate confidence scores based on source
-        reputation. For now, it stands as a testament to the
-        power of combining targeted AI with a rigorous,
-        human-guided process.
+        generate better confidence scores based on source
+        reputation. After building this project, I have no
+        doubt that agentic AI opens new possibilities that
+        previously would've been incredibly hard to
+        accomplish and I already have my next project idea
+        in mind.
       </p>
 
       <div class="project-links">
