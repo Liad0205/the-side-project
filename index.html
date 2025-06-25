@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>The Side Project - Liad Mazor</title>
+    <meta
+      name="description"
+      content="Engineering insights, system design deep-dives, and building things that matter. A technical blog by Liad Mazor."
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #fafafa;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f1f5f9;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-tertiary: #64748b;
+        --accent-primary: #10b981;
+        --accent-secondary: #3b82f6;
+        --accent-tertiary: #f59e0b;
+        --accent-purple: #8b5cf6;
+        --border-subtle: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+        --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1),
+          0 2px 4px -1px rgb(0 0 0 / 0.06);
+        --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1),
+          0 4px 6px -2px rgb(0 0 0 / 0.05);
+        --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1),
+          0 10px 10px -5px rgb(0 0 0 / 0.04);
+        --radius: 16px;
+        --font-mono: "JetBrains Mono", "SF Mono", Monaco,
+          "Cascadia Code", monospace;
+        --gradient-primary: linear-gradient(
+          135deg,
+          var(--accent-primary) 0%,
+          var(--accent-secondary) 100%
+        );
+        --gradient-bg: linear-gradient(
+          135deg,
+          #fafafa 0%,
+          #f8fafc 100%
+        );
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Inter", -apple-system,
+          BlinkMacSystemFont, system-ui, sans-serif;
+        background: var(--gradient-bg);
+        background-attachment: fixed;
+        color: var(--text-primary);
+        margin: 0;
+        line-height: 1.7;
+        font-size: 16px;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 2rem;
+      }
+      /* Typography */
+      h1,
+      h2,
+      h3 {
+        font-weight: 600;
+        line-height: 1.1;
+        margin: 0;
+      }
+      /* Header */
+      .header {
+        padding: 4rem 0 5rem 0;
+        position: relative;
+        overflow: hidden;
+        background: linear-gradient(
+          135deg,
+          rgba(16, 185, 129, 0.02) 0%,
+          rgba(59, 130, 246, 0.02) 100%
+        );
+        border-bottom: 1px solid var(--border-subtle);
+      }
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 30% 30%,
+            rgba(16, 185, 129, 0.03) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 70% 70%,
+            rgba(59, 130, 246, 0.03) 0%,
+            transparent 50%
+          );
+        z-index: 0;
+      }
+      .header-content {
+        position: relative;
+        z-index: 1;
+      }
+      .brand {
+        text-align: center;
+        margin-bottom: 3rem;
+      }
+      .brand h1 {
+        font-size: 4.5rem;
+        font-weight: 800;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 1rem;
+        letter-spacing: -0.03em;
+        text-shadow: 0 0 40px rgba(16, 185, 129, 0.1);
+      }
+      .tagline {
+        font-size: 1.4rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .author-info {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 2px solid var(--accent-primary);
+        padding: 1px;
+        box-shadow: var(--shadow-lg);
+        transition: all 0.3s ease;
+      }
+      .avatar:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-xl);
+      }
+      .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+      .author-details h2 {
+        font-size: 1.25rem;
+        margin-bottom: 0.25rem;
+      }
+      .author-details p {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        margin: 0;
+      }
+      .social-links {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        justify-content: center;
+      }
+      .social-link {
+        color: var(--text-tertiary);
+        transition: all 0.3s ease;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-subtle);
+        box-shadow: var(--shadow-sm);
+      }
+      .social-link:hover {
+        color: var(--accent-primary);
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-md);
+        border-color: var(--accent-primary);
+        background: var(--bg-secondary);
+      }
+      /* Main Content */
+      .main {
+        padding: 4rem 0;
+      }
+      .mission-section {
+        text-align: center;
+        margin-bottom: 6rem;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .mission-section h2 {
+        font-size: 3.5rem;
+        margin-bottom: 2rem;
+        font-weight: 700;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.02em;
+      }
+      .mission-text {
+        font-size: 1.3rem;
+        color: var(--text-secondary);
+        line-height: 1.7;
+        margin-bottom: 4rem;
+        font-weight: 400;
+      }
+      .tech-showcase {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(120px, 1fr)
+        );
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+      .tech-item {
+        background: var(--bg-secondary);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        padding: 1.5rem 1rem;
+        border-radius: var(--radius);
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        backdrop-filter: blur(10px);
+        min-height: 80px;
+      }
+      .tech-item::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--gradient-primary);
+        opacity: 0;
+        transition: opacity 0.4s ease;
+        z-index: 0;
+      }
+      .tech-item:hover::before {
+        opacity: 0.05;
+      }
+      .tech-item:hover {
+        transform: translateY(-6px);
+        border: 2px solid transparent;
+        background: linear-gradient(
+              var(--bg-secondary),
+              var(--bg-secondary)
+            )
+            padding-box,
+          var(--gradient-primary) border-box;
+        box-shadow: var(--shadow-xl),
+          0 0 30px rgba(16, 185, 129, 0.1);
+      }
+      .tech-item span {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        position: relative;
+        z-index: 1;
+        transition: color 0.3s ease;
+      }
+      .tech-item:hover span {
+        color: var(--accent-primary);
+      }
+      /* Posts Section */
+      .posts-section {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .posts-header {
+        text-align: center;
+        margin-bottom: 4rem;
+      }
+      .posts-header h3 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+      }
+      .posts-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.2rem;
+        font-weight: 400;
+      }
+      .posts-grid {
+        display: grid;
+        gap: 2rem;
+      }
+      .post-card {
+        background: var(--bg-secondary);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        border-radius: var(--radius);
+        padding: 2.5rem;
+        text-decoration: none;
+        color: inherit;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+        backdrop-filter: blur(20px);
+        box-shadow: var(--shadow-md);
+      }
+      .post-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 6px;
+        background: var(--gradient-primary);
+        transform: scaleX(0);
+        transition: transform 0.4s ease;
+        transform-origin: left;
+      }
+      .post-card:hover {
+        transform: translateY(-12px);
+        border: 2px solid transparent;
+        background: linear-gradient(
+              var(--bg-secondary),
+              var(--bg-secondary)
+            )
+            padding-box,
+          var(--gradient-primary) border-box;
+        box-shadow: var(--shadow-xl),
+          0 0 50px rgba(16, 185, 129, 0.08);
+      }
+      .post-card:hover::before {
+        transform: scaleX(1);
+      }
+      .post-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 0.85rem;
+        color: var(--text-tertiary);
+      }
+      .post-date {
+        font-family: var(--font-mono);
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--accent-primary);
+        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        border: 1px solid rgba(16, 185, 129, 0.2);
+      }
+      .post-read-time {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+      .post-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+      .post-excerpt {
+        color: var(--text-secondary);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+        font-size: 1.05rem;
+      }
+      .post-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .post-tag {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        font-family: var(--font-mono);
+        font-weight: 600;
+        border: 1px solid var(--border-subtle);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+      }
+      .post-tag::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: var(--gradient-primary);
+        transition: left 0.3s ease;
+        z-index: 0;
+      }
+      .post-tag:hover::before {
+        left: 0;
+      }
+      .post-tag:hover {
+        color: white;
+        border-color: var(--accent-primary);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+      .post-tag span {
+        position: relative;
+        z-index: 1;
+      }
+      /* Footer */
+      .footer {
+        border-top: 1px solid var(--border-subtle);
+        padding: 3rem 0;
+        text-align: center;
+        background: var(--bg-secondary);
+        margin-top: 6rem;
+      }
+      .footer-content {
+        max-width: 600px;
+        margin: 0 auto;
+      }
+      .footer p {
+        color: var(--text-tertiary);
+        font-size: 0.9rem;
+        margin: 0;
+      }
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .container {
+          padding: 0 1.5rem;
+        }
+        .tech-showcase {
+          grid-template-columns: repeat(
+            auto-fit,
+            minmax(100px, 1fr)
+          );
+        }
+      }
+      @media (max-width: 768px) {
+        .container {
+          padding: 0 1rem;
+        }
+        .brand h1 {
+          font-size: 2.5rem;
+        }
+        .mission-section h2 {
+          font-size: 2rem;
+        }
+        .author-info {
+          flex-direction: column;
+          text-align: center;
+        }
+        .tech-showcase {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .post-card {
+          padding: 1.5rem;
+        }
+        .post-title {
+          font-size: 1.25rem;
+        }
+      }
+      /* Focus states for accessibility */
+      .social-link:focus,
+      .post-card:focus {
+        outline: 2px solid var(--accent-primary);
+        outline-offset: 2px;
+      }
+      /* Smooth scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="header-content">
+          <div class="brand">
+            <h1>The Side Project</h1>
+            <p class="tagline">
+              Where engineering curiosity meets real-world
+              nonsense
+            </p>
+          </div>
+
+          <div class="author-info">
+            <div class="avatar">
+              <img
+                src="https://github.com/liad0205.png"
+                alt="Liad Mazor"
+                onerror="this.src='https://placehold.co/64x64/10b981/ffffff?text=LM'"
+              />
+            </div>
+            <div class="author-details">
+              <h2>Liad Mazor</h2>
+              <p>
+                Principal Software Engineer @ Palo Alto
+                Networks
+              </p>
+            </div>
+          </div>
+
+          <div class="social-links">
+            <a
+              href="https://github.com/liad0205"
+              class="social-link"
+              title="GitHub"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                />
+              </svg>
+            </a>
+            <a
+              href="https://www.linkedin.com/in/liad02/"
+              class="social-link"
+              title="LinkedIn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path
+                  d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <div class="container">
+        <section class="mission-section">
+          <h2>Tinkering with code and AI</h2>
+          <p class="mission-text">
+            This is my personal blog for exploring
+            engineering ideas, trying out new things, and
+            documenting what I learn along the way. Expect
+            messy experiments, honest mistakes, and the
+            occasional breakthrough.
+          </p>
+
+          <div class="tech-showcase">
+            <div class="tech-item">
+              <span>AI Engineering</span>
+            </div>
+            <div class="tech-item">
+              <span>Software Engineering</span>
+            </div>
+            <div class="tech-item">
+              <span>Data Science</span>
+            </div>
+            <div class="tech-item">
+              <span>Automation</span>
+            </div>
+            <div class="tech-item">
+              <span>AI Security</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="posts-section" id="posts">
+          <div class="posts-header">
+            <h3>Articles</h3>
+            <p class="posts-subtitle">
+              Recent experiments and things I've learned
+            </p>
+          </div>
+
+          <div class="posts-grid">
+            <a
+              href="posts/agentic-realtime-data-collection.html"
+              class="post-card"
+            >
+              <div class="post-meta">
+                <span class="post-date">2025-06-23</span>
+                <span class="post-read-time">
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline
+                      points="12,6 12,12 16,14"
+                    ></polyline>
+                  </svg>
+                  12 min read
+                </span>
+              </div>
+              <h4 class="post-title">
+                Building Trust in Chaos: A Dual-Agent AI
+                Architecture for Real-Time OSINT
+              </h4>
+              <p class="post-excerpt">
+                I built a dual-agent AI system to track and
+                verify fast-moving geopolitical events
+                concerning the Israel-Iran War. Here's what
+                I learned about data mining and evaluation
+                using an agent based system.
+              </p>
+              <div class="post-tags">
+                <span class="post-tag"
+                  ><span>AI</span></span
+                >
+                <span class="post-tag"
+                  ><span>LLM</span></span
+                >
+                <span class="post-tag"
+                  ><span>System Design</span></span
+                >
+                <span class="post-tag"
+                  ><span>OSINT</span></span
+                >
+              </div>
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <p>&copy; 2025 The Side Project by Liad Mazor</p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

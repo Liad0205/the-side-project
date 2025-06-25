@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+    />
+    <title>
+      Building Trust in Chaos: A Dual-Agent AI Architecture
+      for Real-Time OSINT
+    </title>
+
+    <!-- Meta Tags for SEO and Social Sharing -->
+    <meta
+      name="description"
+      content="How I built a dual-agent AI system to track and verify fast-moving geopolitical events with 20K views in 24 hours. Learn about LLM orchestration, multi-agent systems, and data verification pipelines."
+    />
+    <meta
+      name="keywords"
+      content="AI, artificial intelligence, OSINT, multi-agent systems, LLM orchestration, data verification pipeline, Gemini API, machine learning, real-time data collection, Liad Mazor"
+    />
+    <meta name="author" content="Liad Mazor" />
+
+    <!-- Open Graph Meta Tags -->
+    <meta
+      property="og:title"
+      content="Building Trust in Chaos: A Dual-Agent AI Architecture for Real-Time OSINT"
+    />
+    <meta
+      property="og:description"
+      content="How I built a dual-agent AI system to track and verify fast-moving geopolitical events with 20K views in 24 hours."
+    />
+    <meta
+      property="og:image"
+      content="https://placehold.co/1200x630/2563eb/ffffff?text=Building+Trust+in+Chaos"
+    />
+    <meta
+      property="og:url"
+      content="https://israel-vs-iran.vercel.app/"
+    />
+    <meta property="og:type" content="article" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta
+      name="twitter:card"
+      content="summary_large_image"
+    />
+    <meta
+      name="twitter:title"
+      content="Building Trust in Chaos: A Dual-Agent AI Architecture for Real-Time OSINT"
+    />
+    <meta
+      name="twitter:description"
+      content="How I built a dual-agent AI system to track and verify fast-moving geopolitical events."
+    />
+    <meta
+      name="twitter:image"
+      content="https://placehold.co/1200x630/2563eb/ffffff?text=Building+Trust+in+Chaos"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      rel="preconnect"
+      href="https://fonts.googleapis.com"
+    />
+    <link
+      rel="preconnect"
+      href="https://fonts.gstatic.com"
+      crossorigin
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Lora", serif;
+        background-color: #f8f9fa;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6,
+      .font-sans {
+        font-family: "Inter", sans-serif;
+      }
+      .prose {
+        max-width: 75ch;
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .prose h1 {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        font-weight: 700;
+        color: #1f2937; /* Reverted to black */
+        text-align: center;
+      }
+      .prose h2 {
+        font-size: 1.75rem;
+        line-height: 1.3;
+        font-weight: 600;
+        margin-top: 2.5em;
+        margin-bottom: 1.25em;
+        padding-bottom: 0.3em;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .prose h3 {
+        font-size: 1.25rem;
+        line-height: 1.4;
+        font-weight: 600;
+        margin-top: 2em;
+        margin-bottom: 1em;
+      }
+      .prose p,
+      .prose ul,
+      .prose blockquote,
+      .prose ol {
+        font-size: 1.125rem;
+        line-height: 1.77;
+        color: #374151;
+      }
+      .prose .lead {
+        font-size: 1.2rem;
+        color: #4b5563;
+      }
+      .prose .subtitle {
+        font-family: "Inter", sans-serif;
+        font-size: 1.25rem;
+        font-weight: 500;
+        color: #4b5563;
+        margin-top: -0.75rem;
+        margin-bottom: 2rem;
+        text-align: center;
+      }
+      .prose .accent-text {
+        color: #2563eb;
+        font-weight: 500;
+      }
+      .prose a {
+        color: #2563eb;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        font-weight: 500;
+      }
+      .prose a:hover {
+        color: #1d4ed8;
+      }
+      .prose blockquote {
+        border-left: 4px solid #2563eb;
+        padding-left: 1rem;
+        margin-left: 0;
+        font-style: italic;
+        color: #4b5563;
+      }
+      .prose pre {
+        background-color: #1f2937;
+        color: #d1d5db;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        overflow-x: auto;
+        font-size: 0.95em;
+      }
+      .prose code {
+        font-family: "SFMono-Regular", Consolas,
+          "Liberation Mono", Menlo, Courier, monospace;
+      }
+      .prose code:not(pre > code) {
+        background-color: #e5e7eb;
+        padding: 0.2em 0.4em;
+        border-radius: 0.25rem;
+        font-size: 0.9em;
+      }
+      .author-section {
+        margin-top: 2.5rem;
+        margin-bottom: 2.5rem;
+      }
+      .author-line {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .author-line img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+      .research-grid {
+        display: grid;
+        grid-template-columns: repeat(1, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+      }
+      .research-item {
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      .research-item-icon {
+        flex-shrink: 0;
+        width: 2rem;
+        height: 2rem;
+        color: #2563eb;
+      }
+
+      .agents-grid {
+        display: grid;
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(280px, 1fr)
+        );
+        gap: 2rem;
+        margin-top: 2rem;
+      }
+      .agent-card {
+        background-color: #fff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        display: flex;
+        flex-direction: column;
+      }
+      .agent-card h3 {
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+      }
+      .agent-card .trait {
+        font-family: "Inter", sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        display: inline-block;
+        margin-bottom: 1rem;
+      }
+      .agent-card .trait-researcher {
+        color: #1d4ed8;
+        background-color: #dbeafe;
+      }
+      .agent-card .trait-evaluator {
+        color: #991b1b;
+        background-color: #fee2e2;
+      }
+      .agent-card ul {
+        padding-left: 0;
+        list-style: none;
+        margin-top: 1rem;
+      }
+      .agent-card li {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+      }
+      .agent-card li svg {
+        flex-shrink: 0;
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-top: 0.25rem;
+        color: #6b7280;
+      }
+
+      .project-links {
+        background-color: transparent;
+        padding: 2rem 0;
+        margin: 2rem 0;
+        text-align: center;
+        border-top: 1px solid #e5e7eb;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .project-links .links-grid {
+        display: flex;
+        justify-content: center;
+        gap: 2rem;
+      }
+      .project-links a {
+        color: #4b5563;
+        transition: color 0.3s ease;
+      }
+      .project-links a:hover {
+        color: #2563eb;
+      }
+
+      .image-placeholder {
+        background-color: #e5e7eb;
+        border: 2px dashed #9ca3af;
+        border-radius: 0.5rem;
+        padding: 3rem 2rem;
+        text-align: center;
+        margin: 2rem 0;
+        font-family: "Inter", sans-serif;
+        color: #6b7280;
+      }
+
+      .json-container {
+        font-family: "SFMono-Regular", Consolas,
+          "Liberation Mono", Menlo, Courier, monospace;
+        font-size: 0.9em;
+        line-height: 1.6;
+        background-color: #1f2937;
+        color: #f3f4f6;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        border: 1px solid #374151;
+        max-height: 600px;
+        overflow-y: auto;
+      }
+      .json-key {
+        color: #9cdcfe;
+      }
+      .json-string {
+        color: #ce9178;
+      }
+      .json-number {
+        color: #b5cea8;
+      }
+      .json-boolean {
+        color: #569cd6;
+      }
+      .json-null {
+        color: #c586c0;
+      }
+      .json-toggle {
+        cursor: pointer;
+        user-select: none;
+      }
+      .json-toggle::before {
+        content: "▶ ";
+        display: inline-block;
+        transition: transform 0.1s ease-in-out;
+      }
+      .json-toggle.open::before {
+        transform: rotate(90deg);
+      }
+      .json-nested {
+        margin-left: 2em;
+        display: none;
+      }
+      .json-nested.open {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .prose h1 {
+          font-size: 2rem;
+        }
+        .prose h2 {
+          font-size: 1.5rem;
+        }
+        .author-line {
+          flex-direction: column;
+          text-align: center;
+        }
+        .prose pre,
+        .json-container {
+          white-space: pre-wrap;
+          word-break: break-all;
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 text-gray-800">
+    <article class="prose py-12 px-4 md:px-0">
+      <div class="text-center mb-8">
+        <a
+          href="../index.html"
+          class="font-sans text-blue-600 hover:text-blue-800 no-underline"
+          >← Back to Home</a
+        >
+      </div>
+      <!-- Header Section -->
+      <header>
+        <h1 class="font-sans">
+          Building Trust in Chaos: A Dual-Agent AI
+          Architecture for Real-Time OSINT
+        </h1>
+        <div class="author-section">
+          <div class="author-line font-sans">
+            <img
+              src="https://github.com/liad0205.png"
+              alt="Liad Mazor"
+              onerror="this.src='https://placehold.co/100x100/E2E8F0/4A5568?text=LM'"
+            />
+            <div>
+              <p
+                class="font-sans text-base text-gray-800 m-0"
+              >
+                By
+                <a
+                  href="https://www.linkedin.com/in/liad02/"
+                  target="_blank"
+                  >Liad Mazor</a
+                >, Software Engineer @ Palo Alto Networks
+              </p>
+              <p
+                class="font-sans text-base text-gray-600 m-0 mt-1"
+              >
+                Builds complex systems by day, and arguably
+                more complex ones by night.
+              </p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content -->
+      <p class="lead">
+        When I launched
+        <a
+          href="https://israel-vs-iran.vercel.app/"
+          target="_blank"
+          >Israel-Vs-Iran</a
+        >, I was caught off-guard by the amount of interest
+        and community engagement. While the visualizations
+        garnered attention, the most persistent questions
+        were about the engine under the hood: How was I
+        collecting and verifying complex event data in near
+        real-time? This project was a personal exploration
+        into building
+        <span class="accent-text">multi-agent systems</span>
+        for high-stakes data environments.
+      </p>
+
+      <img
+        src="../images/IsraelVsIran.png"
+        alt="Israel Vs Iran Live Dashboard Screenshot"
+        class="w-full rounded-lg shadow-lg my-8 border border-gray-200"
+      />
+
+      <p>
+        In today's information landscape, tracking
+        fast-moving geopolitical events is a monumental
+        challenge.
+        <span class="accent-text"
+          >Raw news is often contradictory, and separating
+          signal from noise requires immense effort.</span
+        >
+        I was fascinated by this data problem: Could I build
+        an automated system using
+        <strong class="accent-text"
+          >LLM orchestration</strong
+        >
+        that not only ingests information but also attempts
+        to reason about it, verify it, and structure it for
+        analysis? This project started as a personal quest
+        to see if modern agentic AI could be architected to
+        handle such a high-stakes
+        <strong class="accent-text"
+          >data verification pipeline</strong
+        >. This post details the system I built to do just
+        that.
+      </p>
+
+      <h2>The Foundation</h2>
+      <p>
+        Every successful data project begins with clear
+        questions. Before writing a single line of code, I
+        defined a set of high-level research objectives that
+        would guide the entire data collection strategy.
+      </p>
+
+      <div class="research-grid">
+        <div class="research-item">
+          <svg
+            class="research-item-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M14.25 9.75L16.5 12l-2.25 2.25m-4.5 0L7.5 12l2.25-2.25M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"
+            />
+          </svg>
+          <div>
+            What is the adversary's arsenal? How many
+            missiles, what are their capabilities, and where
+            are they?
+          </div>
+        </div>
+        <div class="research-item">
+          <svg
+            class="research-item-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"
+            />
+          </svg>
+          <div>
+            Where are key sites located, such as launch pads
+            or military infrastructure, and what is their
+            current operational status?
+          </div>
+        </div>
+        <div class="research-item">
+          <svg
+            class="research-item-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m6.75 12l-3-3m0 0l-3 3m3-3v6m-1.5-15H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
+            />
+          </svg>
+          <div>
+            What events have occurred? This includes
+            friendly strikes, enemy attacks, and significant
+            military or political developments.
+          </div>
+        </div>
+      </div>
+
+      <p>
+        With these questions in mind, I designed a strict
+        JSON schema to act as the contract between my agents
+        and the final visualization app. Here is a skeleton
+        view of its structure:
+      </p>
+      <pre><code class="language-json">
+{
+  "arsenal": { "...": { "type": "...", "range_km": "...", "verified_status": "..." } },
+  "launch_sites": { "...": { "coordinates": "...", "status": "...", "damage_assessment": "..." } },
+  "salvo_log": [ { "datetime": "...", "missiles_fired": "...", "primary_targets": [], "verified_status": "..." } ],
+  "israeli_strikes": [ { "datetime": "...", "location_name": "...", "target_type": "...", "verified_status": "..." } ],
+  "latest_status_update": { "timestamp": "...", "current_situation": "...", "verified_status": "..." }
+}
+        </code></pre>
+
+      <h2>The Architecture: A Dual-Agent Feedback Loop</h2>
+      <p>
+        I soon discovered that a single, monolithic agent
+        would struggle with the nuanced task of both
+        open-ended research and critical validation. The
+        risk of confirmation bias or hallucination would be
+        too high. Instead, I implemented a
+        <strong class="accent-text"
+          >multi-agent system</strong
+        >
+        with a clear separation of concerns: a
+        <strong>Researcher Agent</strong> and an
+        <strong>Evaluator Agent</strong>. These agents work
+        in an iterative feedback loop to constantly refine
+        the quality of the data.
+      </p>
+
+      <div class="my-8 text-center">
+        <svg
+          width="100%"
+          height="auto"
+          viewBox="0 0 800 300"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <style>
+            .box {
+              fill: #ffffff;
+              stroke: #cbd5e1;
+              stroke-width: 1.5;
+            }
+            .text {
+              font-family: "Inter", sans-serif;
+              font-size: 16px;
+              fill: #1f2937;
+              text-anchor: middle;
+            }
+            .label {
+              font-family: "Inter", sans-serif;
+              font-size: 12px;
+              fill: #4b5563;
+              text-anchor: middle;
+            }
+            .arrow {
+              stroke: #6b7280;
+              stroke-width: 2;
+              marker-end: url(#arrowhead);
+            }
+            .loop-arrow {
+              stroke: #6b7280;
+              stroke-width: 2;
+              marker-end: url(#arrowhead);
+              fill: none;
+            }
+            .data-label {
+              font-family: "Inter", sans-serif;
+              font-size: 14px;
+              fill: #1e40af;
+              text-anchor: middle;
+              font-weight: 500;
+            }
+          </style>
+          <defs>
+            <marker
+              id="arrowhead"
+              viewBox="0 0 10 10"
+              refX="8"
+              refY="5"
+              markerWidth="6"
+              markerHeight="6"
+              orient="auto-start-reverse"
+            >
+              <path
+                d="M 0 0 L 10 5 L 0 10 z"
+                fill="#6b7280"
+              />
+            </marker>
+          </defs>
+
+          <!-- Manual Trigger -->
+          <text x="150" y="30" class="label font-semibold">
+            1. Manual Trigger (w/ Current Date)
+          </text>
+          <line
+            x1="150"
+            y1="40"
+            x2="150"
+            y2="60"
+            class="arrow"
+          />
+
+          <!-- Agent 1: Researcher -->
+          <rect
+            x="50"
+            y="60"
+            width="200"
+            height="100"
+            rx="10"
+            class="box"
+          />
+          <text x="150" y="105" class="text font-semibold">
+            Researcher Agent
+          </text>
+          <text x="150" y="130" class="label">
+            (Gemini + Search)
+          </text>
+
+          <!-- Arrow to JSON -->
+          <line
+            x1="250"
+            y1="110"
+            x2="330"
+            y2="110"
+            class="arrow"
+          />
+          <text x="290" y="100" class="label">
+            Populates & Citations
+          </text>
+
+          <!-- JSON Data -->
+          <path
+            d="M335 85 L350 85 L365 100 L365 120 L350 135 L335 135 Z"
+            fill="#ffffff"
+            stroke="#cbd5e1"
+            stroke-width="1.5"
+          />
+          <path
+            d="M335 85 L350 85 L365 100 L350 115 L335 130 L335 85"
+            fill="#f1f5f9"
+          />
+          <text x="400" y="115" class="data-label">
+            Updated JSON
+          </text>
+
+          <!-- Arrow to Agent 2 -->
+          <line
+            x1="465"
+            y1="110"
+            x2="550"
+            y2="110"
+            class="arrow"
+          />
+          <text x="507.5" y="100" class="label">
+            Verification Request
+          </text>
+
+          <!-- Agent 2: Evaluator -->
+          <rect
+            x="550"
+            y="60"
+            width="200"
+            height="100"
+            rx="10"
+            class="box"
+          />
+          <text x="650" y="105" class="text font-semibold">
+            Evaluator Agent
+          </text>
+          <text x="650" y="130" class="label">
+            (Gemini + Search)
+          </text>
+
+          <!-- Arrow from Evaluator -->
+          <line
+            x1="650"
+            y1="160"
+            x2="650"
+            y2="190"
+            class="arrow"
+          />
+          <text x="650" y="180" class="label">
+            Adds Confidence Score
+          </text>
+
+          <!-- Filter Box -->
+          <rect
+            x="575"
+            y="190"
+            width="150"
+            height="50"
+            rx="10"
+            class="box"
+            style="fill: #fef2f2; stroke: #dc2626"
+          />
+          <text
+            x="650"
+            y="218"
+            class="label"
+            style="fill: #991b1b; font-weight: 500"
+          >
+            Filter Low Confidence
+          </text>
+
+          <!-- Loop Arrow -->
+          <path
+            d="M 575 215 Q 400 270, 250 135"
+            class="loop-arrow"
+          />
+          <text x="400" y="245" class="data-label">
+            Verified & Filtered JSON
+          </text>
+          <text x="400" y="260" class="label">
+            (Becomes input for next loop)
+          </text>
+        </svg>
+      </div>
+
+      <h2>Meet the Agents</h2>
+      <p>
+        To ensure high-quality output, I gave the agents
+        supervised autonomy. They could decide how to
+        formulate their search plans but had to adhere to a
+        strict set of core directives and personas. Each was
+        given a distinct persona as a multilingual OSINT
+        researcher, fluent in English, Hebrew, Farsi, and
+        Arabic, with an inherent skepticism towards official
+        state-sponsored sources.
+      </p>
+
+      <div class="agents-grid">
+        <div class="agent-card">
+          <h3>The Researcher</h3>
+          <span class="trait trait-researcher"
+            >Optimistic Data Gatherer</span
+          >
+          <p>
+            This agent's mission is to cast a wide net and
+            find any potentially relevant information to
+            answer the core research questions.
+          </p>
+          <ul>
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"
+                />
+              </svg>
+              <div>
+                <span class="accent-text">Explore:</span>
+                Actively searches for new data points and
+                connections using the Google Search tool.
+              </div>
+            </li>
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 1-2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 00-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 00.75-.75 2.25 2.25 0 00-.1-.664m-5.8 0A2.251 2.251 0 0113.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25z"
+                />
+              </svg>
+              <div>
+                <span class="accent-text">Populate:</span>
+                Fills out the JSON schema with new findings
+                to maintain a structured dataset.
+              </div>
+            </li>
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                />
+              </svg>
+              <div>
+                <span class="accent-text">Cite:</span>
+                Provides an initial source for every piece
+                of data in the `verified_status` field.
+              </div>
+            </li>
+          </ul>
+        </div>
+        <div class="agent-card">
+          <h3>The Evaluator</h3>
+          <span class="trait trait-evaluator"
+            >Skeptical Verifier</span
+          >
+          <p>
+            This agent's mission is to poke holes in the
+            Researcher's work, assuming everything is wrong
+            until proven otherwise.
+          </p>
+          <ul>
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75"
+                />
+              </svg>
+              <div>
+                <span class="accent-text">Scrutinize:</span>
+                Reviews every data point submitted by the
+                Researcher. Does not add new info.
+              </div>
+            </li>
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.286zm0 13.036h.008v.008h-.008v-.008z"
+                />
+              </svg>
+              <div>
+                <span class="accent-text">Verify:</span>
+                Independently finds multiple sources to
+                corroborate or refute the Researcher's
+                claims.
+              </div>
+            </li>
+            <li>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z"
+                />
+              </svg>
+              <div>
+                <span class="accent-text">Rate:</span>
+                Assigns a confidence score (Low, Medium,
+                High) based on source quality and agreement.
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <h2>Anatomy of an Agent Prompt</h2>
+      <p>
+        The instructions for these agents were not static. I
+        used a
+        <strong class="accent-text"
+          >meta-prompt builder</strong
+        >, powered by Gemini 2.5 Pro, to dynamically
+        generate the final, detailed prompts. This allowed
+        me to layer in complexity and adapt the instructions
+        as I refined the implementation. Below is an early,
+        simplified example of a prompt used for the
+        Evaluator agent.
+      </p>
+      <pre class="mt-6"><code class="language-python">
+EVALUATOR_PROMPT = """
+# Role Definition
+You are a meticulous OSINT (Open-Source Intelligence) validation agent.
+Your sole purpose is to verify the factual accuracy of a given JSON object containing conflict data.
+
+# Core Constraints
+- You must not introduce new information.
+- Your role is to scrutinize, not research.
+- Default stance is skepticism.
+
+# Input
+A JSON object containing data points with `verified_status` fields.
+
+# Verification Process
+1. For each key-value pair in the JSON:
+   - Use `google_search` tool to find at least two high-quality, independent sources.
+   - Prioritize: established news agencies, think tanks (CSIS), official statements.
+   - Cross-reference information from sources against JSON data.
+2. Critically evaluate existing citations in `verified_status` field.
+3. Update `verified_status` with confidence levels:
+   - [High Confidence]: Multiple reputable sources confirm.
+   - [Medium Confidence]: Some corroboration, minor discrepancies.
+   - [Low Confidence]: Cannot find corroborating evidence.
+4. Include brief justification citing your verification sources.
+
+# Golden Rule
+If you cannot find corroborating evidence for a data point, assign it [Low Confidence].
+"""
+        </code></pre>
+
+      <h2>
+        Core Engineering Decisions and Lessons Learned
+      </h2>
+      <p>
+        Building this system wasn't a straight line. The
+        architecture evolved significantly based on a few
+        core challenges and the design philosophies I
+        adopted to solve them.
+      </p>
+
+      <h3>The Primacy of the Prompt</h3>
+      <p>
+        My initial attempts with simple prompts resulted in
+        plausible but unsourced data. I quickly learned that
+        the quality of the output is a direct function of
+        the prompt's precision. Rules like
+        <span class="accent-text">"Cite Everything"</span>
+        and
+        <span class="accent-text"
+          >"Default to Skepticism"</span
+        >
+        were not initial features; they were necessary
+        additions. Forcing an agent into a specific role
+        with strict negative constraints is critical to
+        reining in creativity and ensuring factual grounding
+        in any
+        <strong class="accent-text"
+          >LLM orchestration</strong
+        >
+        system.
+      </p>
+
+      <h3>Battling Context Bloat: The Stateless Loop</h3>
+      <p>
+        One of the most significant hurdles in any complex
+        agentic system is managing the context window. My
+        first instinct was to maintain a continuous
+        conversational history, but this approach failed
+        quickly. When the context is bloated with dozens of
+        articles and prior conversational turns, the model's
+        performance degrades. It starts to lose focus,
+        "forgets" earlier instructions, and may even
+        hallucinate by blending contradictory facts from
+        different sources. This also
+        <span class="accent-text"
+          >dramatically increases token costs.</span
+        >
+      </p>
+      <p>
+        The solution was a
+        <span class="accent-text"
+          >stateless feedback loop</span
+        >. By wiping the session clean for each run and
+        re-initializing the agent with only the latest,
+        verified JSON, I solved several problems at once.
+        This keeps the context focused, the costs low, and
+        ensures the agent is always working from the most
+        accurate "ground truth" available at that moment.
+        This approach is essential for any production-ready
+        <strong class="accent-text"
+          >data verification pipeline</strong
+        >.
+      </p>
+
+      <h3>An Ethical Guardrail: The Human-in-the-Loop</h3>
+      <p>
+        Finally, for a topic this sensitive, a
+        <span class="accent-text"
+          >core ethical principle</span
+        >
+        from the start was that AI should only ever be a
+        tool to assist, not replace, human judgment. The
+        system was never designed to autonomously publish to
+        the web. Its sole purpose was to act as a tireless
+        research assistant, producing a highly-vetted,
+        traceable dataset for a final human review. This
+        human oversight is, and must remain, the most
+        important quality gate in the entire process.
+      </p>
+
+      <h2>Example Output: The Verified JSON Dataset</h2>
+      <p>
+        Here's a sample of the structured data produced by
+        the dual-agent system, showing how each piece of
+        information includes verification status and source
+        citations:
+      </p>
+      <div id="json-viewer" class="json-container"></div>
+
+      <h2>Conclusion</h2>
+      <p>
+        This project was a fascinating exploration into the
+        practical application of agentic AI for complex,
+        real-world data challenges. By architecting a
+        <strong class="accent-text"
+          >multi-agent system</strong
+        >
+        around a dual-agent feedback loop, enforcing a
+        strict data contract via JSON, and grounding every
+        claim in a verifiable source, it's possible to
+        create a powerful engine for sense-making in a
+        chaotic information environment. The key was not
+        just building smart agents, but building a robust,
+        skeptical system around them. While this system
+        proved effective, future iterations could explore
+        adding more diverse data sources (like automated
+        satellite imagery analysis) or even attempting to
+        generate confidence scores based on source
+        reputation. For now, it stands as a testament to the
+        power of combining targeted AI with a rigorous,
+        human-guided process.
+      </p>
+
+      <div class="project-links">
+        <div class="links-grid">
+          <a
+            href="https://israel-vs-iran.vercel.app/"
+            target="_blank"
+            title="Live Demo"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
+              ></path>
+              <polyline points="15 3 21 3 21 9"></polyline>
+              <line x1="10" y1="14" x2="21" y2="3"></line>
+            </svg>
+          </a>
+          <a
+            href="https://github.com/liad0205"
+            target="_blank"
+            title="GitHub"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+              />
+            </svg>
+          </a>
+          <a
+            href="https://www.linkedin.com/in/liad02/"
+            target="_blank"
+            title="LinkedIn"
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <footer
+      class="text-center py-8 font-sans text-gray-500"
+    >
+      <p>&copy; 2025 Liad Mazor. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+      const jsonData = {
+        arsenal: {
+          Haj_Qasem: {
+            type: "ballistic",
+            range_km: 1400,
+            payload_kg: 500,
+            launch_platform: "road-mobile TEL",
+            initial_inventory: 20,
+            current_inventory: 15,
+            verified_status:
+              "[High Confidence] Technical Specs Source: CSIS Missile Defense Project, Janes Information Group. Inventory calculated from initial scenario data minus salvo log.",
+          },
+          "Sejjil-2": {
+            type: "ballistic",
+            range_km: 2000,
+            payload_kg: 750,
+            launch_platform: "road-mobile TEL",
+            initial_inventory: 120,
+            current_inventory: 11,
+            verified_status:
+              "[High Confidence] Technical Specs Source: CSIS Missile Defense Project, IISS Military Balance. Inventory calculated from initial scenario data minus salvo log.",
+          },
+          "Khorramshahr-4": {
+            type: "ballistic",
+            range_km: 2000,
+            payload_kg: 1500,
+            launch_platform: "road-mobile TEL",
+            initial_inventory: 10,
+            current_inventory: 8,
+            verified_status:
+              "[Medium Confidence] Technical Specs Source: CSIS Missile Defense Project. Limited public information on Khorramshahr-4 variant.",
+          },
+        },
+        salvo_log: [
+          {
+            datetime: "2025-06-13T22:00:00Z",
+            missiles_fired: 100,
+            types: {
+              "Ghadr/Emad": 50,
+              "Shahab-3": 50,
+            },
+            primary_targets: ["Tel Aviv", "Jerusalem"],
+            launch_origin: [
+              "Kermanshah Underground Missile Facility",
+              "East Azerbaijan Province Site",
+            ],
+            verified_status:
+              "[High Confidence] Source: Reuters, NBC News, Times of Israel. Launch origins verified through satellite imagery analysis.",
+          },
+        ],
+        latest_status_update: {
+          timestamp: "2025-06-23T14:15:00+03:00",
+          conflict_day: 11,
+          current_situation:
+            "Conflict continues to intensify. Following major IAF strikes on six Iranian airbases, Iran launched a nationwide barrage of ~15-20 missiles targeting northern, central, and southern Israel.",
+          verified_status:
+            "[High Confidence] Sources: IDF, White House, CENTCOM, The National, JPost. Multiple independent confirmations.",
+        },
+      };
+
+      // Improved JSON to HTML renderer
+      function createJsonViewer(container, data) {
+        container.innerHTML = ""; // Clear previous content
+        const fragment = buildJsonFragment(data, 0, true);
+        container.appendChild(fragment);
+      }
+      function buildJsonFragment(
+        data,
+        depth = 0,
+        isRoot = false
+      ) {
+        const fragment = document.createDocumentFragment();
+        if (data === null) {
+          const nullNode = document.createElement("span");
+          nullNode.className = "json-null";
+          nullNode.textContent = "null";
+          fragment.appendChild(nullNode);
+          return fragment;
+        }
+        switch (typeof data) {
+          case "string":
+            const stringNode =
+              document.createElement("span");
+            stringNode.className = "json-string";
+            stringNode.textContent = `"${data}"`;
+            fragment.appendChild(stringNode);
+            return fragment;
+          case "number":
+            const numberNode =
+              document.createElement("span");
+            numberNode.className = "json-number";
+            numberNode.textContent = data;
+            fragment.appendChild(numberNode);
+            return fragment;
+          case "boolean":
+            const booleanNode =
+              document.createElement("span");
+            booleanNode.className = "json-boolean";
+            booleanNode.textContent = data;
+            fragment.appendChild(booleanNode);
+            return fragment;
+          case "object":
+            const isArray = Array.isArray(data);
+            const openBracket = document.createTextNode(
+              isArray ? "[" : "{"
+            );
+            const closeBracket = document.createTextNode(
+              isArray ? "]" : "}"
+            );
+
+            fragment.appendChild(openBracket);
+
+            const keys = Object.keys(data);
+            if (keys.length > 0) {
+              const toggle = document.createElement("span");
+              toggle.className = "json-toggle";
+              // Open the first level by default
+              if (depth === 0) toggle.classList.add("open");
+
+              const nested = document.createElement("div");
+              nested.className = "json-nested";
+              if (depth === 0) nested.classList.add("open");
+
+              toggle.onclick = (e) => {
+                e.stopPropagation();
+                toggle.classList.toggle("open");
+                nested.classList.toggle("open");
+              };
+              fragment.appendChild(toggle);
+              fragment.appendChild(nested);
+
+              keys.forEach((key, index) => {
+                const item = document.createElement("div");
+
+                if (!isArray) {
+                  const keyNode =
+                    document.createElement("span");
+                  keyNode.className = "json-key";
+                  keyNode.textContent = `"${key}": `;
+                  item.appendChild(keyNode);
+                }
+
+                item.appendChild(
+                  buildJsonFragment(data[key], depth + 1)
+                );
+
+                if (index < keys.length - 1) {
+                  item.appendChild(
+                    document.createTextNode(",")
+                  );
+                }
+                nested.appendChild(item);
+              });
+            }
+
+            fragment.appendChild(closeBracket);
+            return fragment;
+          default:
+            return fragment;
+        }
+      }
+
+      // Robust polling mechanism to ensure the element exists before rendering the JSON viewer.
+      const initViewer = () => {
+        const container =
+          document.getElementById("json-viewer");
+        if (container) {
+          createJsonViewer(container, jsonData);
+        } else {
+          // If the container is not found, try again shortly.
+          setTimeout(initViewer, 100);
+        }
+      };
+
+      // Initial call to start the process.
+      initViewer();
+    </script>
+  </body>
+</html>
